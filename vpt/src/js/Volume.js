@@ -61,7 +61,10 @@ readModality(modalityName, handlers) {
 
     // TODO: here read modality format & number of components, ...
     let format, internalFormat;
-    if (components === 2) {
+    if (components === 4) {
+        internalFormat = gl.RGBA8;
+        format = gl.RGBA;
+    } else if (components === 2) {
         internalFormat = gl.RG8;
         format = gl.RG;
     } else {
