@@ -75,7 +75,7 @@ _initGL() {
     this._environmentTexture = WebGL.createTexture(gl, {
         width          : 1,
         height         : 1,
-        data           : new Uint8Array([255, 255, 255, 255]),
+        data           : new Uint8Array([0, 0, 0, 255]),
         format         : gl.RGBA,
         internalFormat : gl.RGBA, // TODO: HDRI & OpenEXR support
         type           : gl.UNSIGNED_BYTE,

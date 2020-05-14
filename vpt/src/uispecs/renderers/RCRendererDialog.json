@@ -32,6 +32,28 @@
       ]
     },
     {
+      "type": "field",
+      "label": "Accumulate data:",
+      "children": [
+        {
+          "type": "checkbox",
+          "bind": "accumulate",
+          "checked": true
+        }
+      ]
+    },
+    {
+      "type": "field",
+      "label": "Gradient opacity:",
+      "children": [
+        {
+          "type": "checkbox",
+          "bind": "gradOpacity",
+          "checked": true
+        }
+      ]
+    },
+    {
       "type": "accordion",
       "label": "Transfer function",
       "children": [

@@ -61,6 +61,7 @@ _generateFrame() {
     gl.uniform1i(program.uniforms.uEnvironment, 2);
     gl.uniform1f(program.uniforms.uStepSize, this._stepSize);
     gl.uniform1f(program.uniforms.uAlphaCorrection, this._alphaCorrection);
+    gl.uniform1i(program.uniforms.uGradOpacity, this._gradOpacity);
     //gl.uniform1f(program.uniforms.uOffset, Math.random());
     let angle = Math.random() * 2 * Math.PI
     gl.uniform2f(program.uniforms.uRandomUnitVector, Math.cos(angle), Math.sin(angle));
@@ -84,9 +85,13 @@ _integrateFrame() {
     gl.uniform1i(program.uniforms.uFrame, 1);
     gl.uniform1f(program.uniforms.uInvFrameNumber, 1.0 / this._frameNumber);
 
+    gl.uniform3f(program.uniforms.uLightPos, 0.0, 3.0, 0.0);
+    gl.uniform3f(program.uniforms.uLightColor, 1.0, 1.0, 1.0);
+
     gl.drawArrays(gl.TRIANGLE_FAN, 0, 4);
 
-    ++this._frameNumber;
+    if (this._accumulate === true)
+        ++this._frameNumber;
 }
 
 _renderFrame() {

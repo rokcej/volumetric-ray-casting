@@ -37,6 +37,10 @@ uniform float uStepSize;
 //uniform float uOffset;
 uniform vec2 uRandomUnitVector;
 uniform float uAlphaCorrection;
+uniform bool uGradOpacity;
+
+uniform vec3 uLightPos;
+uniform vec3 uLightColor;
 
 in vec3 vRayFrom;
 in vec3 vRayTo;
@@ -45,11 +49,10 @@ out vec4 oColor;
 
 @intersectCube
 
-
 // https://stackoverflow.com/a/4275343/4808188
-float rand(vec2 uv, vec2 seed){
-    //return fract(sin(dot(uv * seed, vec2(12.9898, 78.233))) * 43758.5453);
-    return fract(sin(dot(uv, seed * 79.30408)) * 43758.5453);
+float rand(vec2 uv, vec2 unitVector){
+    //return fract(sin(dot(uv, vec2(12.9898, 78.233))) * 43758.5453);
+    return fract(sin(dot(uv, unitVector * 79.30408)) * 43758.5453);
 }
 
 vec4 sampleEnvironmentMap(vec3 d) {
@@ -70,26 +73,30 @@ void main() {
         float rayStepLength = distance(from, to) * uStepSize;
 
         float t = uStepSize * rand(vPositionUV, uRandomUnitVector); // Randomly offset t to avoid artifacts
-        vec3 pos;
-        float val;
-        vec4 colorSample;
+
+        vec3 pos, grad, norm;
+        float val, mag;
+        vec4 volumeSample, colorSample;
         vec4 accumulator = vec4(0.0);
 
-        while (t < 1.0 && accumulator.a < 0.99) {
+        while (t < 1.0 && accumulator.a < 0.999) {
             pos = mix(from, to, t);
-            vec4 sampleData = texture(uVolume, pos);
-            val = sampleData.r;
-            vec3 grad = sampleData.gba * 2.0 - vec3(1.0);
-            float mag = length(grad);
+            volumeSample = texture(uVolume, pos);
+            val = volumeSample.r;
+            grad = volumeSample.gba * 2.0 - vec3(1.0); // Unpack data
+            mag = length(grad);
 
-            vec3 norm = vec3(0.0);
-            if (mag > 0.0)
+            if (mag > 0.0) {
                 norm = normalize(grad);
 
-            colorSample = texture(uTransferFunction, vec2(val, mag));
-            colorSample.a *= rayStepLength * uAlphaCorrection * (mag * 8.0);
-            colorSample.rgb *= colorSample.a;
-            accumulator += (1.0 - accumulator.a) * colorSample;
+                colorSample = texture(uTransferFunction, vec2(val, mag));
+                colorSample.a *= rayStepLength * uAlphaCorrection;
+                if (uGradOpacity) {
+                    colorSample.a *= mag * 8.0;
+                }
+                colorSample.rgb *= colorSample.a;
+                accumulator += (1.0 - accumulator.a) * colorSample;
+            }
             
             t += uStepSize;
         }
@@ -130,11 +137,15 @@ in vec2 vPosition;
 out vec4 oColor;
 
 void main() {
-    // Combine data from different frames
-    vec4 acc = texture(uAccumulator, vPosition);
-    vec4 frame = texture(uFrame, vPosition);
-    oColor = acc + (frame - acc) * uInvFrameNumber;
-    //oColor = texture(uFrame, vPosition);
+    if (uInvFrameNumber == 1.0) {
+        // Only use latest frame
+        oColor = texture(uFrame, vPosition);
+    } else {
+        // Combine data from different frames
+        vec4 acc = texture(uAccumulator, vPosition);
+        vec4 frame = texture(uFrame, vPosition);
+        oColor = acc + (frame - acc) * uInvFrameNumber;
+    }
 }
 
 // #section RCRender/vertex
