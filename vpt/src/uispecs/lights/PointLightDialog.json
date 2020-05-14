@@ -1,0 +1,31 @@
+// #package uispecs
+
+// #section PointLightDialog
+
+{
+	"type": "panel",
+	"children": [
+		{
+			"type": "field",
+			"label": "Light color:",
+			"children": [
+			  {
+				"type": "color-chooser",
+				"bind": "lightColor",
+				"value": "#ffffff"
+			  }
+			]
+		},
+		{
+		  "type": "field",
+		  "label": "Light position:",
+		  "children": [
+			{
+			  "type": "vector",
+			  "bind": "lightPos",
+			  "value": 0
+			}
+		  ]
+		}
+	]
+}

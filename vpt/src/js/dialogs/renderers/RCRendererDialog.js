@@ -19,6 +19,10 @@ constructor(renderer, options) {
     this._binds.opacity.addEventListener('input', this._handleChange);
     this._binds.accumulate.addEventListener('change', this._handleChange);
     this._binds.gradOpacity.addEventListener('change', this._handleChange);
+    
+    this._binds.useLights.addEventListener('change', this._handleChange);
+    this._binds.lightColor.addEventListener('change', this._handleChange);
+    this._binds.lightPos.addEventListener('input', this._handleChange);
 
     this._tfwidget = new TransferFunctionWidget();
     this._binds.tfcontainer.add(this._tfwidget);
@@ -37,6 +41,16 @@ _handleChange() {
     this._renderer._alphaCorrection = this._binds.opacity.getValue();
     this._renderer._accumulate = this._binds.accumulate.isChecked();
     this._renderer._gradOpacity = this._binds.gradOpacity.isChecked();
+
+    const color = CommonUtils.hex2rgb(this._binds.lightColor.getValue());
+    this._renderer._lightColor[0] = color.r;
+    this._renderer._lightColor[1] = color.g;
+    this._renderer._lightColor[2] = color.b;
+
+    const pos = this._binds.lightPos.getValue();
+    this._renderer._lightPos[0] = pos.x;
+    this._renderer._lightPos[1] = pos.y;
+    this._renderer._lightPos[2] = pos.z;
 
     this._renderer.reset();
 }

@@ -89,12 +89,16 @@ void main() {
             if (mag > 0.0) {
                 norm = normalize(grad);
 
+                vec3 lightDir = normalize(uLightPos - pos);
+                float lambert = max(dot(lightDir, norm), 0.0);
+                vec3 light = uLightColor * lambert;
+
                 colorSample = texture(uTransferFunction, vec2(val, mag));
                 colorSample.a *= rayStepLength * uAlphaCorrection;
                 if (uGradOpacity) {
                     colorSample.a *= mag * 8.0;
                 }
-                colorSample.rgb *= colorSample.a;
+                colorSample.rgb *= light * colorSample.a;
                 accumulator += (1.0 - accumulator.a) * colorSample;
             }
             

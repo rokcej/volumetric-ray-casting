@@ -8,10 +8,12 @@ class RCRenderer extends AbstractRenderer {
 constructor(gl, volume, environmentTexture, options) {
     super(gl, volume, environmentTexture, options);
 
-    // Object.assign(this, {
-    //     _stepSize : 0.05,
-    //     _alphaCorrection : 3
-    // }, options);
+    Object.assign(this, {
+        _stepSize : 0.0,
+        _alphaCorrection : 0.0,
+        _lightPos    : [0.0, 0.0, 0.0],
+        _lightColor  : [0.0, 0.0, 0.0]
+    }, options);
 
     this._programs = WebGL.buildPrograms(this._gl, {
         generate  : SHADERS.RCGenerate,
@@ -67,6 +69,9 @@ _generateFrame() {
     gl.uniform2f(program.uniforms.uRandomUnitVector, Math.cos(angle), Math.sin(angle));
     gl.uniformMatrix4fv(program.uniforms.uMvpInverseMatrix, false, this._mvpInverseMatrix.m);
 
+    gl.uniform3fv(program.uniforms.uLightPos, this._lightPos);
+    gl.uniform3fv(program.uniforms.uLightColor, this._lightColor);
+
     gl.drawArrays(gl.TRIANGLE_FAN, 0, 4);
 }
 
@@ -84,9 +89,6 @@ _integrateFrame() {
     gl.uniform1i(program.uniforms.uAccumulator, 0);
     gl.uniform1i(program.uniforms.uFrame, 1);
     gl.uniform1f(program.uniforms.uInvFrameNumber, 1.0 / this._frameNumber);
-
-    gl.uniform3f(program.uniforms.uLightPos, 0.0, 3.0, 0.0);
-    gl.uniform3f(program.uniforms.uLightColor, 1.0, 1.0, 1.0);
 
     gl.drawArrays(gl.TRIANGLE_FAN, 0, 4);
 

@@ -54,6 +54,74 @@
       ]
     },
     {
+      "type": "field",
+      "label": "Light color:",
+      "children": [
+        {
+          "type": "color-chooser",
+          "bind": "lightColor",
+          "value": "#ffffff"
+        }
+      ]
+    },
+    {
+      "type": "field",
+      "label": "Light position:",
+      "children": [
+        {
+          "type": "vector",
+          "bind": "lightPos",
+          "value": 1
+        }
+      ]
+    },
+    {
+      "type": "field",
+      "label": "Use lights:",
+      "children": [
+        {
+          "type": "checkbox",
+          "bind": "useLights",
+          "checked": false
+        }
+      ]
+    },
+    {
+      "type": "accordion",
+      "label": "Light",
+      "children": [
+        {
+          "type": "field",
+          "label": "Light type:",
+          "children": [
+            {
+              "type": "dropdown",
+              "bind": "lightTypeSelect",
+              "options": [
+                {
+                  "value": "ambient",
+                  "label": "Ambient",
+                  "selected": true
+                },
+                {
+                  "value": "point",
+                  "label": "Point"
+                },
+                {
+                  "value": "directional",
+                  "label": "Directional"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "panel",
+          "bind": "lightTypeSettingsContainer"
+        }
+      ]
+    },
+    {
       "type": "accordion",
       "label": "Transfer function",
       "children": [
