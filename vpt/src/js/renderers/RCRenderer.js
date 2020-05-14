@@ -19,6 +19,8 @@ constructor(gl, volume, environmentTexture, options) {
         render    : SHADERS.RCRender,
         reset     : SHADERS.RCReset
     }, MIXINS);
+    
+    this._frameNumber = 1;
 }
 
 destroy() {
@@ -37,6 +39,8 @@ _resetFrame() {
     gl.useProgram(program.program);
 
     gl.drawArrays(gl.TRIANGLE_FAN, 0, 4);
+
+    this._frameNumber = 1;
 }
 
 _generateFrame() {
@@ -49,12 +53,17 @@ _generateFrame() {
     gl.bindTexture(gl.TEXTURE_3D, this._volume.getTexture());
     gl.activeTexture(gl.TEXTURE1);
     gl.bindTexture(gl.TEXTURE_2D, this._transferFunction);
+    gl.activeTexture(gl.TEXTURE2);
+    gl.bindTexture(gl.TEXTURE_2D, this._environmentTexture);
 
     gl.uniform1i(program.uniforms.uVolume, 0);
     gl.uniform1i(program.uniforms.uTransferFunction, 1);
+    gl.uniform1i(program.uniforms.uEnvironment, 2);
     gl.uniform1f(program.uniforms.uStepSize, this._stepSize);
     gl.uniform1f(program.uniforms.uAlphaCorrection, this._alphaCorrection);
-    gl.uniform1f(program.uniforms.uOffset, Math.random());
+    //gl.uniform1f(program.uniforms.uOffset, Math.random());
+    let angle = Math.random() * 2 * Math.PI
+    gl.uniform2f(program.uniforms.uRandomUnitVector, Math.cos(angle), Math.sin(angle));
     gl.uniformMatrix4fv(program.uniforms.uMvpInverseMatrix, false, this._mvpInverseMatrix.m);
 
     gl.drawArrays(gl.TRIANGLE_FAN, 0, 4);
@@ -73,8 +82,11 @@ _integrateFrame() {
 
     gl.uniform1i(program.uniforms.uAccumulator, 0);
     gl.uniform1i(program.uniforms.uFrame, 1);
+    gl.uniform1f(program.uniforms.uInvFrameNumber, 1.0 / this._frameNumber);
 
     gl.drawArrays(gl.TRIANGLE_FAN, 0, 4);
+
+    ++this._frameNumber;
 }
 
 _renderFrame() {

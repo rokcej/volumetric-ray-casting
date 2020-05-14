@@ -571,25 +571,44 @@ function computeGradientForward(volumeData, volumeDimensions, idx) {
                             y: j,
                             z: k
                         }, inputDimensions);
+
+                        let gradient;
                         if (i === 0 || j === 0 || k === 0 ||
                             i === inputDimensions.width  - 1 ||
                             j === inputDimensions.height - 1 ||
                             k === inputDimensions.depth  - 1) {
-                            gradientData[3 * centerIdx + 0] = 0;
-                            gradientData[3 * centerIdx + 1] = 0;
-                            gradientData[3 * centerIdx + 2] = 0;
+                            gradient = [0, 0, 0];
                         } else {
-                            let gradient = computeGradientSobel(volumeData, inputDimensions, {
+                            gradient = computeGradientSobel(volumeData, inputDimensions, {
                                 x: i,
                                 y: j,
                                 z: k
                             });
-                            // here, dividing by Math.sqrt(3) would prevent clamping in the worst case
-                            for (let l = 0; l < 3; ++l) {
-                                gradient[l] = Math.round((gradient[l] + 1.0) * 0.5 * 255);
-                                gradient[l] = Math.min(Math.max(gradient[l], 0), 255);
-                                gradientData[3 * centerIdx + l] = gradient[l];
+
+                            if (false) { // Enable to make gradients close to the borders weaker
+                                const border = 0.01;
+                                let distances = [
+                                    i / (inputDimensions.width - 1),
+                                    j / (inputDimensions.height - 1),
+                                    k / (inputDimensions.depth - 1)
+                                ];
+                                let minDistance = 1;
+                                for (let l = 0; l < 3; ++l)
+                                    minDistance = Math.min(minDistance, distances[l], 1 - distances[l]);
+                                if (minDistance < border) {
+                                    let attenuation = Math.pow(minDistance / border, 2);
+                                    for (let l = 0; l < 3; ++l)
+                                        gradient[l] *= attenuation;
+                                }
                             }
+
+                            // here, dividing by Math.sqrt(3) would prevent clamping in the worst case
+                        }
+                        // Pack data into uint8
+                        for (let l = 0; l < 3; ++l) {
+                            gradient[l] = Math.round((gradient[l] + 1.0) * 0.5 * 255);
+                            gradient[l] = Math.min(Math.max(gradient[l], 0), 255);
+                            gradientData[3 * centerIdx + l] = gradient[l];
                         }
                     }
                 }
