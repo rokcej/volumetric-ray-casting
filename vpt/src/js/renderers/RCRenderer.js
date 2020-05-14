@@ -8,10 +8,10 @@ class RCRenderer extends AbstractRenderer {
 constructor(gl, volume, environmentTexture, options) {
     super(gl, volume, environmentTexture, options);
 
-    Object.assign(this, {
-        _stepSize : 0.05,
-        _alphaCorrection : 3
-    }, options);
+    // Object.assign(this, {
+    //     _stepSize : 0.05,
+    //     _alphaCorrection : 3
+    // }, options);
 
     this._programs = WebGL.buildPrograms(this._gl, {
         generate  : SHADERS.RCGenerate,

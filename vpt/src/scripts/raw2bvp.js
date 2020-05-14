@@ -152,15 +152,15 @@ function extractBlock(volumeData, volumeDimensions, blockOffset, blockDimensions
 }
 
 function combineVolumeAndGradient(volumeData, gradientData) {
-    if (volumeData.length !== gradientData.length) {
+    if (volumeData.length * 3 !== gradientData.length) {
         throw new Error('Cannot combine volume with gradient');
     }
     let data = Buffer.allocUnsafe(volumeData.length * 4);
     for (let i = 0; i < volumeData.length; i++) {
         data[4 * i + 0] = volumeData[i];
-        data[4 * i + 1] = gradientData[i][0];
-        data[4 * i + 2] = gradientData[i][1];
-        data[4 * i + 3] = gradientData[i][2];
+        data[4 * i + 1] = gradientData[3 * i + 0];
+        data[4 * i + 2] = gradientData[3 * i + 1];
+        data[4 * i + 3] = gradientData[3 * i + 2];
     }
     return data;
 }
@@ -515,7 +515,7 @@ function computeGradientSobel(volumeData, volumeDimensions, idx) {
     }
     dz /= kernelZ.length;
 
-    //return Math.sqrt(dx * dx + dy * dy + dz * dz);
+    //let len = Math.sqrt(dx * dx + dy * dy + dz * dz);
     return [dx, dy, dz];
 }
 
@@ -562,7 +562,7 @@ function computeGradientForward(volumeData, volumeDimensions, idx) {
         if (useGradient) {
             console.error('Computing gradient');
             modality.components = 4;
-            gradientData = Buffer.allocUnsafe(totalCount(inputDimensions));
+            gradientData = Buffer.allocUnsafe(totalCount(inputDimensions) * 3);
             for (let k = 0; k < inputDimensions.depth; k++) {
                 for (let j = 0; j < inputDimensions.height; j++) {
                     for (let i = 0; i < inputDimensions.width; i++) {
@@ -575,7 +575,9 @@ function computeGradientForward(volumeData, volumeDimensions, idx) {
                             i === inputDimensions.width  - 1 ||
                             j === inputDimensions.height - 1 ||
                             k === inputDimensions.depth  - 1) {
-                            gradientData[centerIdx] = 0;
+                            gradientData[3 * centerIdx + 0] = 0;
+                            gradientData[3 * centerIdx + 1] = 0;
+                            gradientData[3 * centerIdx + 2] = 0;
                         } else {
                             let gradient = computeGradientSobel(volumeData, inputDimensions, {
                                 x: i,
@@ -584,10 +586,10 @@ function computeGradientForward(volumeData, volumeDimensions, idx) {
                             });
                             // here, dividing by Math.sqrt(3) would prevent clamping in the worst case
                             for (let l = 0; l < 3; ++l) {
-                                gradient[l] = Math.round((gradient[l] + 1) * 0.5 * 255);
+                                gradient[l] = Math.round((gradient[l] + 1.0) * 0.5 * 255);
                                 gradient[l] = Math.min(Math.max(gradient[l], 0), 255);
+                                gradientData[3 * centerIdx + l] = gradient[l];
                             }
-                            gradientData[centerIdx] = gradient;
                         }
                     }
                 }

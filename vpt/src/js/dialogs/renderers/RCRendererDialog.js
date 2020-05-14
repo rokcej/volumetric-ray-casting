@@ -17,6 +17,7 @@ constructor(renderer, options) {
 
     this._binds.steps.addEventListener('input', this._handleChange);
     this._binds.opacity.addEventListener('input', this._handleChange);
+    this._handleChange();
 
     this._tfwidget = new TransferFunctionWidget();
     this._binds.tfcontainer.add(this._tfwidget);

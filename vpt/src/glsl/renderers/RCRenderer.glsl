@@ -58,9 +58,15 @@ void main() {
             pos = mix(from, to, t);
             vec4 sampleData = texture(uVolume, pos);
             val = sampleData.r;
-            vec3 gradient = sampleData.gba;
-            colorSample = texture(uTransferFunction, vec2(val, 0.5));
-            colorSample.a *= rayStepLength * uAlphaCorrection;
+            vec3 grad = sampleData.gba * 2.0 - vec3(1.0);
+            float mag = length(grad);
+
+            vec3 norm = vec3(0.0);
+            if (mag > 0.0)
+                norm = normalize(grad);
+
+            colorSample = texture(uTransferFunction, vec2(val, mag));
+            colorSample.a *= rayStepLength * uAlphaCorrection * (mag * 4.0);
             colorSample.rgb *= colorSample.a;
             accumulator += (1.0 - accumulator.a) * colorSample;
             t += uStepSize;
