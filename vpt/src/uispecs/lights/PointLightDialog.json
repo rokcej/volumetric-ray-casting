@@ -26,6 +26,18 @@
 			  "value": 0
 			}
 		  ]
+		},
+		{
+			"type": "field",
+			"label": "Attenuation:",
+			"children": [
+			  {
+				"type": "spinner",
+				"bind": "lightAttenuation",
+				"value": 0,
+				"min": 0
+			  }
+			]
 		}
 	]
 }

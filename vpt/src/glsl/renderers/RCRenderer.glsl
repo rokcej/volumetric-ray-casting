@@ -43,6 +43,7 @@ uniform int uLightType;
 uniform vec3 uLightPos;
 uniform vec3 uLightColor;
 uniform vec3 uLightDir;
+uniform float uLightAttenuation;
 
 in vec3 vRayFrom;
 in vec3 vRayTo;
@@ -100,16 +101,20 @@ void main() {
 
                 if (uLightType != 0) {
                     vec3 lightDir;
+                    float attenuation = 1.0;
                     if (uLightType == 1) { // Point light
-                        lightDir = normalize(uLightPos - pos);
-                    } else if (uLightType == 2) {
+                        lightDir = uLightPos - pos;
+                        float d2 = dot(lightDir, lightDir); // Distance squared
+                        lightDir = normalize(lightDir);
+                        attenuation = 1.0 / (1.0 + uLightAttenuation * d2);
+                    } else if (uLightType == 2) { // Directional light
                         lightDir = uLightDir;
-                    } else {
+                    } else { // Undefined light
                         lightDir = vec3(0.0);
                     }
 
                     float lambert = max(dot(lightDir, norm), 0.0);
-                    vec3 illum = uLightColor * lambert;
+                    vec3 illum = uLightColor * lambert * attenuation;
 
                     colorSample.rgb *= illum;
                 }

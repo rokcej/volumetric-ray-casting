@@ -15,6 +15,7 @@ class PointLightDialog extends AbstractDialog {
 	
 		this._binds.lightColor.addEventListener('change', this._handleChange);
 		this._binds.lightPos.addEventListener('input', this._handleChange);
+		this._binds.lightAttenuation.addEventListener('input', this._handleChange);
 
 		this._handleChange();
 	}
@@ -31,6 +32,8 @@ class PointLightDialog extends AbstractDialog {
 		this._renderer._lightPos[0] = pos.x;
 		this._renderer._lightPos[1] = pos.y;
 		this._renderer._lightPos[2] = pos.z;
+
+		this._renderer._lightAttenuation = this._binds.lightAttenuation.getValue();
 
 		this._renderer.reset();
 	}

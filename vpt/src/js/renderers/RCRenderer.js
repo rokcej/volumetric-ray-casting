@@ -14,7 +14,8 @@ constructor(gl, volume, environmentTexture, options) {
         _lightType   : 0,
         _lightPos    : [0.0, 0.0, 0.0],
         _lightColor  : [0.0, 0.0, 0.0],
-        _lightDir    : [0.0, 0.0, 0.0]
+        _lightDir    : [0.0, 0.0, 0.0],
+        _lightAttenuation: 0.0
     }, options);
 
     this._programs = WebGL.buildPrograms(this._gl, {
@@ -76,6 +77,7 @@ _generateFrame() {
     gl.uniform3fv(program.uniforms.uLightPos, this._lightPos);
     gl.uniform3fv(program.uniforms.uLightColor, this._lightColor);
     gl.uniform3fv(program.uniforms.uLightDir, this._lightDir);
+    gl.uniform1f(program.uniforms.uLightAttenuation, this._lightAttenuation);
 
     gl.drawArrays(gl.TRIANGLE_FAN, 0, 4);
 }
