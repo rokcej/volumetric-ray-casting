@@ -12,10 +12,11 @@ constructor(gl, volume, environmentTexture, options) {
         _stepSize : 0.0,
         _alphaCorrection : 0.0,
         _lightType   : 0,
-        _lightPos    : [0.0, 0.0, 0.0],
         _lightColor  : [0.0, 0.0, 0.0],
+        _lightPos    : [0.0, 0.0, 0.0],
         _lightDir    : [0.0, 0.0, 0.0],
-        _lightAttenuation: 0.0
+        _lightIntensity :    1.0,
+        _lightAttenuation :  0.0
     }, options);
 
     this._programs = WebGL.buildPrograms(this._gl, {
@@ -74,8 +75,9 @@ _generateFrame() {
 
     // Lights
     gl.uniform1i(program.uniforms.uLightType, this._lightType);
-    gl.uniform3fv(program.uniforms.uLightPos, this._lightPos);
     gl.uniform3fv(program.uniforms.uLightColor, this._lightColor);
+    gl.uniform1f(program.uniforms.uLightIntensity, this._lightIntensity);
+    gl.uniform3fv(program.uniforms.uLightPos, this._lightPos);
     gl.uniform3fv(program.uniforms.uLightDir, this._lightDir);
     gl.uniform1f(program.uniforms.uLightAttenuation, this._lightAttenuation);
 

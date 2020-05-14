@@ -40,6 +40,7 @@ uniform float uAlphaCorrection;
 uniform bool uGradOpacity;
 
 uniform int uLightType;
+uniform float uLightIntensity;
 uniform vec3 uLightPos;
 uniform vec3 uLightColor;
 uniform vec3 uLightDir;
@@ -99,6 +100,8 @@ void main() {
                 }
                 colorSample.rgb *= colorSample.a;
 
+                // Lights
+                vec3 illum = uLightColor * uLightIntensity;
                 if (uLightType != 0) {
                     vec3 lightDir;
                     float attenuation = 1.0;
@@ -114,10 +117,10 @@ void main() {
                     }
 
                     float lambert = max(dot(lightDir, norm), 0.0);
-                    vec3 illum = uLightColor * lambert * attenuation;
+                    illum *= lambert * attenuation;
 
-                    colorSample.rgb *= illum;
                 }
+                colorSample.rgb *= illum;
 
                 accumulator += (1.0 - accumulator.a) * colorSample;
             }

@@ -13,7 +13,6 @@ class DirectionalLightDialog extends AbstractDialog {
 	
 		this._handleChange = this._handleChange.bind(this);
 	
-		this._binds.lightColor.addEventListener('change', this._handleChange);
 		this._binds.lightDir.addEventListener('input', this._handleChange);
 
 		this._handleChange();
@@ -21,11 +20,6 @@ class DirectionalLightDialog extends AbstractDialog {
 	
 	_handleChange() {
 		this._renderer._lightType = 2;
-
-		const color = CommonUtils.hex2rgb(this._binds.lightColor.getValue());
-		this._renderer._lightColor[0] = color.r;
-		this._renderer._lightColor[1] = color.g;
-		this._renderer._lightColor[2] = color.b;
 
 		const dir = this._binds.lightDir.getValue();
 		this._renderer._lightDir[0] = dir.x;
