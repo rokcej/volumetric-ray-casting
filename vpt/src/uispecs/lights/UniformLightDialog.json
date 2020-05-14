@@ -5,16 +5,5 @@
 {
 	"type": "panel",
 	"children": [
-		{
-			"type": "field",
-			"label": "Light color:",
-			"children": [
-			  {
-				"type": "color-chooser",
-				"bind": "lightColor",
-				"value": "#ffffff"
-			  }
-			]
-		}
 	]
 }

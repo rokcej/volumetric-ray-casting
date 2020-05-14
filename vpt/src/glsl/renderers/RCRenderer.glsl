@@ -39,8 +39,10 @@ uniform vec2 uRandomUnitVector;
 uniform float uAlphaCorrection;
 uniform bool uGradOpacity;
 
+uniform int uLightType;
 uniform vec3 uLightPos;
 uniform vec3 uLightColor;
+uniform vec3 uLightDir;
 
 in vec3 vRayFrom;
 in vec3 vRayTo;
@@ -89,16 +91,29 @@ void main() {
             if (mag > 0.0) {
                 norm = normalize(grad);
 
-                vec3 lightDir = normalize(uLightPos - pos);
-                float lambert = max(dot(lightDir, norm), 0.0);
-                vec3 light = uLightColor * lambert;
-
                 colorSample = texture(uTransferFunction, vec2(val, mag));
                 colorSample.a *= rayStepLength * uAlphaCorrection;
                 if (uGradOpacity) {
                     colorSample.a *= mag * 8.0;
                 }
-                colorSample.rgb *= light * colorSample.a;
+                colorSample.rgb *= colorSample.a;
+
+                if (uLightType != 0) {
+                    vec3 lightDir;
+                    if (uLightType == 1) { // Point light
+                        lightDir = normalize(uLightPos - pos);
+                    } else if (uLightType == 2) {
+                        lightDir = uLightDir;
+                    } else {
+                        lightDir = vec3(0.0);
+                    }
+
+                    float lambert = max(dot(lightDir, norm), 0.0);
+                    vec3 illum = uLightColor * lambert;
+
+                    colorSample.rgb *= illum;
+                }
+
                 accumulator += (1.0 - accumulator.a) * colorSample;
             }
             
@@ -107,7 +122,7 @@ void main() {
 
         if (accumulator.a > 1.0) {
             accumulator.rgb /= accumulator.a;
-        } else if (accumulator.a < 1.0) {
+        } else if (accumulator.a < 1.0) { // Sample environment if visible through object
             accumulator += (1.0 - accumulator.a) * sampleEnvironmentMap(rayDirectionUnit);
         }
 

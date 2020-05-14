@@ -54,39 +54,6 @@
       ]
     },
     {
-      "type": "field",
-      "label": "Light color:",
-      "children": [
-        {
-          "type": "color-chooser",
-          "bind": "lightColor",
-          "value": "#ffffff"
-        }
-      ]
-    },
-    {
-      "type": "field",
-      "label": "Light position:",
-      "children": [
-        {
-          "type": "vector",
-          "bind": "lightPos",
-          "value": 1
-        }
-      ]
-    },
-    {
-      "type": "field",
-      "label": "Use lights:",
-      "children": [
-        {
-          "type": "checkbox",
-          "bind": "useLights",
-          "checked": false
-        }
-      ]
-    },
-    {
       "type": "accordion",
       "label": "Light",
       "children": [
@@ -96,11 +63,11 @@
           "children": [
             {
               "type": "dropdown",
-              "bind": "lightTypeSelect",
+              "bind": "lightType",
               "options": [
                 {
-                  "value": "ambient",
-                  "label": "Ambient",
+                  "value": "uniform",
+                  "label": "Uniform",
                   "selected": true
                 },
                 {
@@ -117,7 +84,7 @@
         },
         {
           "type": "panel",
-          "bind": "lightTypeSettingsContainer"
+          "bind": "lightTypeContainer"
         }
       ]
     },

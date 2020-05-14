@@ -12,10 +12,14 @@ class UniformLightDialog extends AbstractDialog {
 		this._renderer = renderer;
 	
 		this._handleChange = this._handleChange.bind(this);
+
+		this._handleChange();
 	}
 	
 	_handleChange() {
+		this._renderer._lightType = 0;
 
+		this._renderer.reset();
 	}
 	
 }

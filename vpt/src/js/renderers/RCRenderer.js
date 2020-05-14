@@ -11,8 +11,10 @@ constructor(gl, volume, environmentTexture, options) {
     Object.assign(this, {
         _stepSize : 0.0,
         _alphaCorrection : 0.0,
+        _lightType   : 0,
         _lightPos    : [0.0, 0.0, 0.0],
-        _lightColor  : [0.0, 0.0, 0.0]
+        _lightColor  : [0.0, 0.0, 0.0],
+        _lightDir    : [0.0, 0.0, 0.0]
     }, options);
 
     this._programs = WebGL.buildPrograms(this._gl, {
@@ -69,8 +71,11 @@ _generateFrame() {
     gl.uniform2f(program.uniforms.uRandomUnitVector, Math.cos(angle), Math.sin(angle));
     gl.uniformMatrix4fv(program.uniforms.uMvpInverseMatrix, false, this._mvpInverseMatrix.m);
 
+    // Lights
+    gl.uniform1i(program.uniforms.uLightType, this._lightType);
     gl.uniform3fv(program.uniforms.uLightPos, this._lightPos);
     gl.uniform3fv(program.uniforms.uLightColor, this._lightColor);
+    gl.uniform3fv(program.uniforms.uLightDir, this._lightDir);
 
     gl.drawArrays(gl.TRIANGLE_FAN, 0, 4);
 }
