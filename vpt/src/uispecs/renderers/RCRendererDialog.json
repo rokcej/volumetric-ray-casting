@@ -66,61 +66,16 @@
     },
     {
       "type": "accordion",
-      "label": "Light",
+      "label": "Lights",
       "children": [
         {
-          "type": "field",
-          "label": "Light type:",
-          "children": [
-            {
-              "type": "dropdown",
-              "bind": "lightType",
-              "options": [
-                {
-                  "value": "uniform",
-                  "label": "Uniform",
-                  "selected": true
-                },
-                {
-                  "value": "point",
-                  "label": "Point"
-                },
-                {
-                  "value": "directional",
-                  "label": "Directional"
-                }
-              ]
-            }
-          ]
-        },
-        {
-          "type": "field",
-          "label": "Light intensity",
-          "children": [
-            {
-              "type": "spinner",
-              "bind": "lightIntensity",
-              "logarithmic": true,
-              "value": 1,
-              "min": 0,
-              "step": 0.1
-            }
-          ]
-        },
-        {
-          "type": "field",
-          "label": "Light color:",
-          "children": [
-            {
-            "type": "color-chooser",
-            "bind": "lightColor",
-            "value": "#ffffff"
-            }
-          ]
-        },
-        {
           "type": "panel",
-          "bind": "lightTypeContainer"
+          "bind": "lightsContainer"
+        },
+        {
+          "type": "button",
+          "label": "Add light",
+          "bind": "addLight"
         }
       ]
     },

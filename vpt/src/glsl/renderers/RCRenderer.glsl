@@ -41,12 +41,17 @@ uniform bool uGradOpacity;
 uniform bool uBidirShading;
 
 // Lights
-uniform int uLightType;
-uniform float uLightIntensity;
-uniform vec3 uLightPos;
-uniform vec3 uLightColor;
-uniform vec3 uLightDir;
-uniform float uLightAttenuation;
+#define MAX_LIGHTS 8
+struct Light {
+    int type;
+    float intensity;
+    float attenuation;
+    vec3 pos;
+    vec3 color;
+    vec3 dir;
+};
+uniform int uNumLights;
+uniform Light uLights[MAX_LIGHTS];
 
 // Materials
 uniform int uMatType;
@@ -62,6 +67,7 @@ out vec4 oColor;
 
 @intersectCube
 
+// Generate noise based on a random unit vector and uv coordinates
 // https://stackoverflow.com/a/4275343/4808188
 float rand(vec2 uv, vec2 unitVector){
     //return fract(sin(dot(uv, vec2(12.9898, 78.233))) * 43758.5453);
@@ -117,17 +123,17 @@ void main() {
                 colorSample.rgb *= colorSample.a;
 
                 // Lights
-                vec3 illum = uLightColor * uLightIntensity;
-                if (uLightType != 0) {
+                vec3 illum = uLights[0].color * uLights[0].intensity;
+                if (uLights[0].type != 0) {
                     vec3 lightDir;
                     float attenuation = 1.0;
-                    if (uLightType == 1) { // Point light
-                        lightDir = uLightPos - pos;
+                    if (uLights[0].type == 1) { // Point light
+                        lightDir = uLights[0].pos - pos;
                         float d2 = dot(lightDir, lightDir); // Distance squared
                         lightDir = normalize(lightDir);
-                        attenuation = 1.0 / (1.0 + uLightAttenuation * d2);
-                    } else if (uLightType == 2) { // Directional light
-                        lightDir = uLightDir;
+                        attenuation = 1.0 / (1.0 + uLights[0].attenuation * d2);
+                    } else if (uLights[0].type == 2) { // Directional light
+                        lightDir = uLights[0].dir;
                     } else { // Undefined light
                         lightDir = vec3(0.0);
                     }

@@ -6,10 +6,11 @@
 
 class DirectionalLightDialog extends AbstractDialog {
 
-	constructor(renderer, options) {
+	constructor(renderer, light, options) {
 		super(UISPECS.DirectionalLightDialog, options);
 	
 		this._renderer = renderer;
+		this._light = light;
 	
 		this._handleChange = this._handleChange.bind(this);
 	
@@ -19,18 +20,18 @@ class DirectionalLightDialog extends AbstractDialog {
 	}
 	
 	_handleChange() {
-		this._renderer._lightType = 2;
+		this._light.type = 2;
 
 		const dir = this._binds.lightDir.getValue();
-		this._renderer._lightDir[0] = dir.x;
-		this._renderer._lightDir[1] = dir.y;
-		this._renderer._lightDir[2] = dir.z;
+		this._light.dir[0] = dir.x;
+		this._light.dir[1] = dir.y;
+		this._light.dir[2] = dir.z;
 		let len = Math.sqrt(dir.x * dir.x + dir.y * dir.y + dir.z * dir.z);
 		if (len > 0.0) {
 			let invLen = 1.0 / len;
-			this._renderer._lightDir[0] *= invLen;
-			this._renderer._lightDir[1] *= invLen;
-			this._renderer._lightDir[2] *= invLen;
+			this._light.dir[0] *= invLen;
+			this._light.dir[1] *= invLen;
+			this._light.dir[2] *= invLen;
 		}
 
 		this._renderer.reset();

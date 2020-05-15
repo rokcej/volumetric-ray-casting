@@ -6,10 +6,11 @@
 
 class PointLightDialog extends AbstractDialog {
 
-	constructor(renderer, options) {
+	constructor(renderer, light, options) {
 		super(UISPECS.PointLightDialog, options);
 	
 		this._renderer = renderer;
+		this._light = light;
 	
 		this._handleChange = this._handleChange.bind(this);
 	
@@ -20,14 +21,14 @@ class PointLightDialog extends AbstractDialog {
 	}
 	
 	_handleChange() {
-		this._renderer._lightType = 1;
+		this._light.type = 1;
 
 		const pos = this._binds.lightPos.getValue();
-		this._renderer._lightPos[0] = pos.x;
-		this._renderer._lightPos[1] = pos.y;
-		this._renderer._lightPos[2] = pos.z;
+		this._light.pos[0] = pos.x;
+		this._light.pos[1] = pos.y;
+		this._light.pos[2] = pos.z;
 
-		this._renderer._lightAttenuation = this._binds.lightAttenuation.getValue();
+		this._light.attenuation = this._binds.lightAttenuation.getValue();
 
 		this._renderer.reset();
 	}

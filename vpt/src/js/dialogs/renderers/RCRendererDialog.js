@@ -4,6 +4,7 @@
 // #include ../../TransferFunctionWidget.js
 
 // #include ../lights/
+// #include ../LightDialog.js
 // #include ../materials/
 
 // #include ../../../uispecs/renderers/RCRendererDialog.json
@@ -15,10 +16,12 @@ constructor(renderer, options) {
 
     this._renderer = renderer;
 
+    this._lights = [];
+
     this._handleChange = this._handleChange.bind(this);
     this._handleTFChange = this._handleTFChange.bind(this);
-    this._handleLightChange = this._handleLightChange.bind(this);
     this._handleMatChange = this._handleMatChange.bind(this);
+    this._handleAddLight = this._handleAddLight.bind(this);
 
     this._binds.steps.addEventListener('input', this._handleChange);
     this._binds.opacity.addEventListener('input', this._handleChange);
@@ -26,9 +29,7 @@ constructor(renderer, options) {
     this._binds.gradOpacity.addEventListener('change', this._handleChange);
     this._binds.bidirShading.addEventListener('change', this._handleChange);
 
-    this._binds.lightType.addEventListener('change', this._handleLightChange);
-    this._binds.lightColor.addEventListener('change', this._handleChange);
-    this._binds.lightIntensity.addEventListener('change', this._handleChange);
+    this._binds.addLight.addEventListener('click', this._handleAddLight);
 
     this._binds.matType.addEventListener('change', this._handleMatChange);
 
@@ -37,7 +38,6 @@ constructor(renderer, options) {
     this._tfwidget.addEventListener('change', this._handleTFChange);
 
     this._handleChange();
-    this._handleLightChange();
     this._handleMatChange();
 }
 
@@ -53,13 +53,6 @@ _handleChange() {
     this._renderer._gradOpacity = this._binds.gradOpacity.isChecked();
     this._renderer._bidirShading = this._binds.bidirShading.isChecked();
 
-    const color = CommonUtils.hex2rgb(this._binds.lightColor.getValue());
-    this._renderer._lightColor[0] = color.r;
-    this._renderer._lightColor[1] = color.g;
-    this._renderer._lightColor[2] = color.b;
-
-    this._renderer._lightIntensity = this._binds.lightIntensity.getValue();
-
     this._renderer.reset();
 }
 
@@ -68,21 +61,32 @@ _handleTFChange() {
     this._renderer.reset();
 }
 
-_handleLightChange() {
-    if (this._lightDialog) {
-        this._lightDialog.destroy();
-    }
+_handleAddLight() {
+    if (this._renderer._maxLights < this._lights.length) {
+        alert("Maximum number of lights exceeded.");
+    } else {
+        let ld = new LightDialog(this._renderer, this._lights.length);
+        ld.appendTo(this._binds.lightsContainer);
+        this._lights.push(ld);
 
-    const selectedLight = this._binds.lightType.getValue();
-    let dialogClass;
-    switch (selectedLight) {
-        case 'uniform'      : dialogClass = UniformLightDialog; break;
-        case 'point'        : dialogClass = PointLightDialog; break;
-        case 'directional'  : dialogClass = DirectionalLightDialog; break;
-    }
+        ld._binds.removeLight.addEventListener('click', () => { this._handleRemoveLight(ld._index); }); // JavaScript magic
 
-    this._lightDialog = new dialogClass(this._renderer);
-    this._lightDialog.appendTo(this._binds.lightTypeContainer);
+        ++this._renderer._numLights;
+        this._renderer.reset();
+    }
+}
+
+_handleRemoveLight(index) {
+    if (this._lights.length > index) {
+        this._lights[index].destroy();
+        this._lights.splice(index, 1);
+
+        for (let i = index; i < this._lights.length; ++i)
+            this._lights[i]._changeIndex(i);
+
+        --this._renderer._numLights;
+        this._renderer.reset();
+    }
 }
 
 _handleMatChange() {

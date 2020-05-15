@@ -8,10 +8,24 @@ class RCRenderer extends AbstractRenderer {
 constructor(gl, volume, environmentTexture, options) {
     super(gl, volume, environmentTexture, options);
 
+    this._maxLights = 8;
+    this._lights = new Array(this._maxLights);
+    for (let i = 0; i < this._maxLights; ++i) {
+        this._lights[i] = {
+            type        : 0,
+            color       : [0.0, 0.0, 0.0],
+            pos         : [0.0, 0.0, 0.0],
+            dir         : [0.0, 0.0, 0.0],
+            intensity   : 1.0,
+            attenuation : 0.0,
+        };
+    }
+
     Object.assign(this, {
         _stepSize : 0.0,
         _alphaCorrection : 0.0,
         // Lights
+        _numLights   : 0,
         _lightType   : 0,
         _lightColor  : [0.0, 0.0, 0.0],
         _lightPos    : [0.0, 0.0, 0.0],
@@ -82,12 +96,22 @@ _generateFrame() {
     gl.uniformMatrix4fv(program.uniforms.uMvpInverseMatrix, false, this._mvpInverseMatrix.m);
 
     // Lights
-    gl.uniform1i(program.uniforms.uLightType, this._lightType);
-    gl.uniform3fv(program.uniforms.uLightColor, this._lightColor);
-    gl.uniform1f(program.uniforms.uLightIntensity, this._lightIntensity);
-    gl.uniform3fv(program.uniforms.uLightPos, this._lightPos);
-    gl.uniform3fv(program.uniforms.uLightDir, this._lightDir);
-    gl.uniform1f(program.uniforms.uLightAttenuation, this._lightAttenuation);
+    gl.uniform1i(program.uniforms.uNumLights, this._numLights);
+    for (let i = 0; i < Math.min(this._numLights, this._maxLights); ++i) {
+        let si = i.toString();
+        gl.uniform1i(program.uniforms["uLights[" + si + "].type"], this._lights[i].type);
+        gl.uniform3fv(program.uniforms["uLights[" + si + "].color"], this._lights[i].color);
+        gl.uniform1f(program.uniforms["uLights[" + si + "].intensity"], this._lights[i].intensity);
+        gl.uniform3fv(program.uniforms["uLights[" + si + "].pos"], this._lights[i].pos);
+        gl.uniform3fv(program.uniforms["uLights[" + si + "].dir"], this._lights[i].dir);
+        gl.uniform1f(program.uniforms["uLights[" + si + "].attenuation"], this._lights[i].attenuation);
+    }
+    // gl.uniform1i(program.uniforms["uLights[0].type"], this._lightType);
+    // gl.uniform3fv(program.uniforms["uLights[0].color"], this._lightColor);
+    // gl.uniform1f(program.uniforms["uLights[0].intensity"], this._lightIntensity);
+    // gl.uniform3fv(program.uniforms["uLights[0].pos"], this._lightPos);
+    // gl.uniform3fv(program.uniforms["uLights[0].dir"], this._lightDir);
+    // gl.uniform1f(program.uniforms["uLights[0].attenuation"], this._lightAttenuation);
 
     // Materials
     gl.uniform1i(program.uniforms.uMatType, this._matType);

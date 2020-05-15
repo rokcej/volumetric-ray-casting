@@ -6,10 +6,11 @@
 
 class UniformLightDialog extends AbstractDialog {
 
-	constructor(renderer, options) {
+	constructor(renderer, light, options) {
 		super(UISPECS.UniformLightDialog, options);
 	
 		this._renderer = renderer;
+		this._light = light;
 	
 		this._handleChange = this._handleChange.bind(this);
 
@@ -17,7 +18,7 @@ class UniformLightDialog extends AbstractDialog {
 	}
 	
 	_handleChange() {
-		this._renderer._lightType = 0;
+		this._light.type = 0;
 
 		this._renderer.reset();
 	}
