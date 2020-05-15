@@ -12,7 +12,8 @@
 			{
 			  "type": "vector",
 			  "bind": "lightPos",
-			  "value": 0
+			  "value": 0,
+			  "step": 0.5
 			}
 		  ]
 		},
@@ -24,6 +25,7 @@
 				"type": "spinner",
 				"bind": "lightAttenuation",
 				"value": 0,
+				"step": 0.1,
 				"min": 0
 			  }
 			]
