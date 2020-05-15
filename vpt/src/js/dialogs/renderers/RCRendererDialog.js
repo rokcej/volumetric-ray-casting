@@ -39,6 +39,7 @@ constructor(renderer, options) {
 
     this._handleChange();
     this._handleMatChange();
+    this._handleAddLight(); // Start with a default light
 }
 
 destroy() {
@@ -62,7 +63,7 @@ _handleTFChange() {
 }
 
 _handleAddLight() {
-    if (this._renderer._maxLights < this._lights.length) {
+    if (this._lights.length >= this._renderer._maxLights) {
         alert("Maximum number of lights exceeded.");
     } else {
         let ld = new LightDialog(this._renderer, this._lights.length);

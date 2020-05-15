@@ -70,8 +70,8 @@ out vec4 oColor;
 // Generate noise based on a random unit vector and uv coordinates
 // https://stackoverflow.com/a/4275343/4808188
 float rand(vec2 uv, vec2 unitVector){
-    //return fract(sin(dot(uv, vec2(12.9898, 78.233))) * 43758.5453);
-    return fract(sin(dot(uv, unitVector * 79.30408)) * 43758.5453);
+    //return fract(sin(dot(uv, vec2(12.9898, 78.233))) * 43758.5453); // Original formula
+    return fract(sin(dot(uv, unitVector * 79.30408)) * 43758.5453); // Edited formula
 }
 
 vec4 sampleEnvironmentMap(vec3 d) {
@@ -100,22 +100,21 @@ void main() {
 
         float t = uStepSize * rand(vPositionUV, uRandomUnitVector); // Randomly offset t to avoid artifacts
 
-        vec3 pos, grad, norm;
-        float val, mag;
-        vec4 volumeSample, colorSample;
         vec4 accumulator = vec4(0.0);
 
         while (t < 1.0 && accumulator.a < 0.999) {
-            pos = mix(from, to, t);
-            volumeSample = texture(uVolume, pos);
-            val = volumeSample.r;
-            grad = volumeSample.gba * 2.0 - vec3(1.0); // Unpack data
-            mag = length(grad);
+            vec3 pos = mix(from, to, t);
+            // Sample volume
+            vec4 volumeSample = texture(uVolume, pos);
+            float val = volumeSample.r;
+            vec3 grad = volumeSample.gba * 2.0 - vec3(1.0); // Unpack data
+            float mag = length(grad);
 
             if (mag > 0.0) {
-                norm = normalize(grad);
+                vec3 norm = normalize(grad);
 
-                colorSample = texture(uTransferFunction, vec2(val, mag));
+                // Apply transfer function to get color
+                vec4 colorSample = texture(uTransferFunction, vec2(val, mag));
                 colorSample.a *= rayStepLength * uAlphaCorrection;
                 if (uGradOpacity) {
                     colorSample.a *= mag * 8.0;
@@ -123,48 +122,54 @@ void main() {
                 colorSample.rgb *= colorSample.a;
 
                 // Lights
-                vec3 illum = uLights[0].color * uLights[0].intensity;
-                if (uLights[0].type != 0) {
-                    vec3 lightDir;
-                    float attenuation = 1.0;
-                    if (uLights[0].type == 1) { // Point light
-                        lightDir = uLights[0].pos - pos;
-                        float d2 = dot(lightDir, lightDir); // Distance squared
-                        lightDir = normalize(lightDir);
-                        attenuation = 1.0 / (1.0 + uLights[0].attenuation * d2);
-                    } else if (uLights[0].type == 2) { // Directional light
-                        lightDir = uLights[0].dir;
-                    } else { // Undefined light
-                        lightDir = vec3(0.0);
+                vec3 illumSum = vec3(0.0); // Sum of illuminations from all the lights
+                for (int i = 0; i < uNumLights; ++i) { // Loop over all lights
+                    vec3 illum = uLights[i].color * uLights[i].intensity;
+                    if (uLights[i].type != 0) {
+                        vec3 lightDir;
+                        float attenuation = 1.0;
+                        // Light types
+                        if (uLights[i].type == 1) { // Point light
+                            lightDir = uLights[i].pos - pos;
+                            float d2 = dot(lightDir, lightDir); // Distance squared
+                            lightDir = normalize(lightDir);
+                            attenuation = 1.0 / (1.0 + uLights[i].attenuation * d2);
+                        } else if (uLights[i].type == 2) { // Directional light
+                            lightDir = uLights[i].dir;
+                        } else { // Undefined light, error
+                            lightDir = vec3(0.0);
+                            attenuation = 0.0;
+                        }
+                        illum *= attenuation; // Apply light attenuation
+
+                        // Materials
+                        if (uMatType == 1) { // Lambertian
+                            // https://en.wikipedia.org/wiki/Lambertian_reflectance
+                            float ambient = uMatAmbient;
+                            float diffuse = uMatDiffuse * cosAngle(norm, lightDir);
+                            illum *= (ambient + diffuse);
+                        } else if (uMatType == 2) { // Phong
+                            // https://en.wikipedia.org/wiki/Phong_reflection_model
+                            float ambient = uMatAmbient;
+                            float diffuse = uMatDiffuse * cosAngle(norm, lightDir);
+
+                            vec3 R = reflect(-lightDir, norm); // Reflected light vector
+                            float specular = uMatSpecular * pow(cosAngle(R, -rayDirectionUnit), uMatShininess);
+                            illum *= (ambient + diffuse + specular);
+                        } else if (uMatType == 3) { // Phong-Blinn
+                            // https://en.wikipedia.org/wiki/Blinn%E2%80%93Phong_reflection_model
+                            float ambient = uMatAmbient;
+                            float diffuse = uMatDiffuse * cosAngle(norm, lightDir);
+
+                            vec3 H = normalize(lightDir - rayDirectionUnit); // Halfway vector
+                            float specular = uMatSpecular * pow(cosAngle(norm, H), 4.0 * uMatShininess); // Multiply by 4 to make it closer to phong shininess
+                            illum *= (ambient + diffuse + specular);
+                        }
+
                     }
-                    illum *= attenuation;
-
-                    // Materials
-                    if (uMatType == 1) { // Lambertian
-                        // https://en.wikipedia.org/wiki/Lambertian_reflectance
-                        float ambient = uMatAmbient;
-                        float diffuse = uMatDiffuse * cosAngle(norm, lightDir);
-                        illum *= (ambient + diffuse);
-                    } else if (uMatType == 2) { // Phong
-                        // https://en.wikipedia.org/wiki/Phong_reflection_model
-                        float ambient = uMatAmbient;
-                        float diffuse = uMatDiffuse * cosAngle(norm, lightDir);
-
-                        vec3 R = reflect(-lightDir, norm);
-                        float specular = uMatSpecular * pow(cosAngle(R, -rayDirectionUnit), uMatShininess);
-                        illum *= (ambient + diffuse + specular);
-                    } else if (uMatType == 3) { // Phong-Blinn
-                        // https://en.wikipedia.org/wiki/Blinn%E2%80%93Phong_reflection_model
-                        float ambient = uMatAmbient;
-                        float diffuse = uMatDiffuse * cosAngle(norm, lightDir);
-
-                        vec3 H = normalize(lightDir - rayDirectionUnit);
-                        float specular = uMatSpecular * pow(cosAngle(norm, H), 4.0 * uMatShininess); // Multiply by 4 to make it closer to phong shininess
-                        illum *= (ambient + diffuse + specular);
-                    }
-
+                    illumSum += illum; // Accumulate illuminations
                 }
-                colorSample.rgb *= illum;
+                colorSample.rgb *= illumSum; // Apply total illumination
 
                 accumulator += (1.0 - accumulator.a) * colorSample;
             }
