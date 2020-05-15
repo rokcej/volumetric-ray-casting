@@ -24,6 +24,7 @@ constructor(renderer, options) {
     this._binds.opacity.addEventListener('input', this._handleChange);
     this._binds.accumulate.addEventListener('change', this._handleChange);
     this._binds.gradOpacity.addEventListener('change', this._handleChange);
+    this._binds.bidirShading.addEventListener('change', this._handleChange);
 
     this._binds.lightType.addEventListener('change', this._handleLightChange);
     this._binds.lightColor.addEventListener('change', this._handleChange);
@@ -50,6 +51,7 @@ _handleChange() {
     this._renderer._alphaCorrection = this._binds.opacity.getValue();
     this._renderer._accumulate = this._binds.accumulate.isChecked();
     this._renderer._gradOpacity = this._binds.gradOpacity.isChecked();
+    this._renderer._bidirShading = this._binds.bidirShading.isChecked();
 
     const color = CommonUtils.hex2rgb(this._binds.lightColor.getValue());
     this._renderer._lightColor[0] = color.r;

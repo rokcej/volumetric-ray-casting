@@ -38,6 +38,7 @@ uniform float uStepSize;
 uniform vec2 uRandomUnitVector;
 uniform float uAlphaCorrection;
 uniform bool uGradOpacity;
+uniform bool uBidirShading;
 
 // Lights
 uniform int uLightType;
@@ -70,6 +71,13 @@ float rand(vec2 uv, vec2 unitVector){
 vec4 sampleEnvironmentMap(vec3 d) {
     vec2 texCoord = vec2(atan(d.x, -d.z), asin(-d.y) * 2.0) * M_INVPI * 0.5 + 0.5;
     return texture(uEnvironment, texCoord);
+}
+
+float cosAngle(vec3 v1, vec3 v2) {
+    if (uBidirShading)
+        return abs(dot(v1, v2));
+    else
+        return max(dot(v1, v2), 0.0);
 }
 
 void main() {
@@ -127,12 +135,12 @@ void main() {
 
                     // Materials
                     if (uMatType == 1) { // Lambertian
-                        float diffuse = uMatDiffuse * max(dot(lightDir, norm), 0.0);
+                        float diffuse = uMatDiffuse * cosAngle(lightDir, norm);
                         illum *= diffuse;
                     } else if (uMatType == 2) { // Phong
                         float ambient = uMatAmbient;
-                        float diffuse = uMatDiffuse * max(dot(lightDir, norm), 0.0);
-                        float specular = uMatSpecular * pow(max(dot(-rayDirectionUnit, reflect(-lightDir, norm)), 0.0), uMatShininess);
+                        float diffuse = uMatDiffuse * cosAngle(lightDir, norm);
+                        float specular = uMatSpecular * pow(cosAngle(-rayDirectionUnit, reflect(-lightDir, norm)), uMatShininess);
                         illum *= (ambient + diffuse + specular);
                     }
 

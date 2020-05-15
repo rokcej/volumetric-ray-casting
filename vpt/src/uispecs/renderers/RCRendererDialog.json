@@ -33,7 +33,7 @@
     },
     {
       "type": "field",
-      "label": "Accumulate data:",
+      "label": "Accumulate renders:",
       "children": [
         {
           "type": "checkbox",
@@ -50,6 +50,17 @@
           "type": "checkbox",
           "bind": "gradOpacity",
           "checked": true
+        }
+      ]
+    },
+    {
+      "type": "field",
+      "label": "Bidirectional shading:",
+      "children": [
+        {
+          "type": "checkbox",
+          "bind": "bidirShading",
+          "checked": false
         }
       ]
     },

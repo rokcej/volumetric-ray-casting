@@ -75,6 +75,7 @@ _generateFrame() {
     gl.uniform1f(program.uniforms.uStepSize, this._stepSize);
     gl.uniform1f(program.uniforms.uAlphaCorrection, this._alphaCorrection);
     gl.uniform1i(program.uniforms.uGradOpacity, this._gradOpacity);
+    gl.uniform1i(program.uniforms.uBidirShading, this._bidirShading);
     //gl.uniform1f(program.uniforms.uOffset, Math.random());
     let angle = Math.random() * 2 * Math.PI
     gl.uniform2f(program.uniforms.uRandomUnitVector, Math.cos(angle), Math.sin(angle));
