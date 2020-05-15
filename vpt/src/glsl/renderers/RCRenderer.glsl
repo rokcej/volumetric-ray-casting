@@ -39,12 +39,20 @@ uniform vec2 uRandomUnitVector;
 uniform float uAlphaCorrection;
 uniform bool uGradOpacity;
 
+// Lights
 uniform int uLightType;
 uniform float uLightIntensity;
 uniform vec3 uLightPos;
 uniform vec3 uLightColor;
 uniform vec3 uLightDir;
 uniform float uLightAttenuation;
+
+// Materials
+uniform int uMatType;
+uniform float uMatAmbient;
+uniform float uMatDiffuse;
+uniform float uMatSpecular;
+uniform float uMatShininess;
 
 in vec3 vRayFrom;
 in vec3 vRayTo;
@@ -115,9 +123,18 @@ void main() {
                     } else { // Undefined light
                         lightDir = vec3(0.0);
                     }
+                    illum *= attenuation;
 
-                    float lambert = max(dot(lightDir, norm), 0.0);
-                    illum *= lambert * attenuation;
+                    // Materials
+                    if (uMatType == 1) { // Lambertian
+                        float diffuse = uMatDiffuse * max(dot(lightDir, norm), 0.0);
+                        illum *= diffuse;
+                    } else if (uMatType == 2) { // Phong
+                        float ambient = uMatAmbient;
+                        float diffuse = uMatDiffuse * max(dot(lightDir, norm), 0.0);
+                        float specular = uMatSpecular * pow(max(dot(-rayDirectionUnit, reflect(-lightDir, norm)), 0.0), uMatShininess);
+                        illum *= (ambient + diffuse + specular);
+                    }
 
                 }
                 colorSample.rgb *= illum;

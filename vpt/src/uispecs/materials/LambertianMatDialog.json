@@ -1,0 +1,21 @@
+// #package uispecs
+
+// #section LambertianMatDialog
+
+{
+	"type": "panel",
+	"children": [
+		{
+		  "type": "field",
+		  "label": "Diffuse:",
+		  "children": [
+			{
+			  "type": "spinner",
+			  "bind": "matDiffuse",
+			  "value": 1,
+			  "min": 0
+			}
+		  ]
+		}
+	]
+}

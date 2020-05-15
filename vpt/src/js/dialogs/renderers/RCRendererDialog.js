@@ -4,6 +4,7 @@
 // #include ../../TransferFunctionWidget.js
 
 // #include ../lights/
+// #include ../materials/
 
 // #include ../../../uispecs/renderers/RCRendererDialog.json
 
@@ -17,6 +18,7 @@ constructor(renderer, options) {
     this._handleChange = this._handleChange.bind(this);
     this._handleTFChange = this._handleTFChange.bind(this);
     this._handleLightChange = this._handleLightChange.bind(this);
+    this._handleMatChange = this._handleMatChange.bind(this);
 
     this._binds.steps.addEventListener('input', this._handleChange);
     this._binds.opacity.addEventListener('input', this._handleChange);
@@ -27,12 +29,15 @@ constructor(renderer, options) {
     this._binds.lightColor.addEventListener('change', this._handleChange);
     this._binds.lightIntensity.addEventListener('change', this._handleChange);
 
+    this._binds.matType.addEventListener('change', this._handleMatChange);
+
     this._tfwidget = new TransferFunctionWidget();
     this._binds.tfcontainer.add(this._tfwidget);
     this._tfwidget.addEventListener('change', this._handleTFChange);
 
     this._handleChange();
     this._handleLightChange();
+    this._handleMatChange();
 }
 
 destroy() {
@@ -76,6 +81,22 @@ _handleLightChange() {
 
     this._lightDialog = new dialogClass(this._renderer);
     this._lightDialog.appendTo(this._binds.lightTypeContainer);
+}
+
+_handleMatChange() {
+    if (this._matDialog) {
+        this._matDialog.destroy();
+    }
+
+    const selectedMat = this._binds.matType.getValue();
+    let dialogClass;
+    switch (selectedMat) {
+        case 'lambertian'   : dialogClass = LambertianMatDialog; break;
+        case 'phong'        : dialogClass = PhongMatDialog; break;
+    }
+
+    this._matDialog = new dialogClass(this._renderer);
+    this._matDialog.appendTo(this._binds.matTypeContainer);
 }
 
 }

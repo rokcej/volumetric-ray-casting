@@ -115,6 +115,37 @@
     },
     {
       "type": "accordion",
+      "label": "Reflection model",
+      "children": [
+        {
+          "type": "field",
+          "label": "Material type:",
+          "children": [
+            {
+              "type": "dropdown",
+              "bind": "matType",
+              "options": [
+                {
+                  "value": "lambertian",
+                  "label": "Lambertian",
+                  "selected": true
+                },
+                {
+                  "value": "phong",
+                  "label": "Phong"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "panel",
+          "bind": "matTypeContainer"
+        }
+      ]
+    },
+    {
+      "type": "accordion",
       "label": "Transfer function",
       "children": [
         {

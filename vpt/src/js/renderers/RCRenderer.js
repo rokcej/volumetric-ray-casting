@@ -11,12 +11,19 @@ constructor(gl, volume, environmentTexture, options) {
     Object.assign(this, {
         _stepSize : 0.0,
         _alphaCorrection : 0.0,
+        // Lights
         _lightType   : 0,
         _lightColor  : [0.0, 0.0, 0.0],
         _lightPos    : [0.0, 0.0, 0.0],
         _lightDir    : [0.0, 0.0, 0.0],
-        _lightIntensity :    1.0,
-        _lightAttenuation :  0.0
+        _lightIntensity     : 1.0,
+        _lightAttenuation   : 0.0,
+        // Materials
+        _matType        : 0, 
+        _matAmbient     : 0.0,
+        _matDiffuse     : 0.0,
+        _matSpecular    : 0.0,
+        _matShininess   : 1.0,
     }, options);
 
     this._programs = WebGL.buildPrograms(this._gl, {
@@ -80,6 +87,13 @@ _generateFrame() {
     gl.uniform3fv(program.uniforms.uLightPos, this._lightPos);
     gl.uniform3fv(program.uniforms.uLightDir, this._lightDir);
     gl.uniform1f(program.uniforms.uLightAttenuation, this._lightAttenuation);
+
+    // Materials
+    gl.uniform1i(program.uniforms.uMatType, this._matType);
+    gl.uniform1f(program.uniforms.uMatAmbient, this._matAmbient);
+    gl.uniform1f(program.uniforms.uMatDiffuse, this._matDiffuse);
+    gl.uniform1f(program.uniforms.uMatSpecular, this._matSpecular);
+    gl.uniform1f(program.uniforms.uMatShininess, this._matShininess);
 
     gl.drawArrays(gl.TRIANGLE_FAN, 0, 4);
 }
