@@ -21,7 +21,7 @@ constructor(options) {
         _height                 : 256,
         _transferFunctionWidth  : 256,
         _transferFunctionHeight : 256,
-        scaleSpeed              : 0.003
+        scaleSpeed              : 0.3
     }, options);
 
     this._$html = DOMUtils.instantiate(TEMPLATES.TransferFunctionWidget);
@@ -164,8 +164,8 @@ _addHandle(index) {
         const i = parseInt(DOMUtils.data(e.currentTarget, 'index'));
         this.selectBump(i);
     });
-    $handle.addEventListener('mousewheel', e => {
-        const amount = e.deltaY * this.scaleSpeed;
+    $handle.addEventListener('wheel', e => {
+        const amount = Math.sign(e.deltaY) * this.scaleSpeed;
         const scale = Math.exp(-amount);
         const i = parseInt(DOMUtils.data(e.currentTarget, 'index'));
         this.selectBump(i);

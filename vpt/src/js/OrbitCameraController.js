@@ -18,7 +18,7 @@ constructor(camera, domElement, options) {
         rotationSpeed    : 2,
         translationSpeed : 2,
         moveSpeed        : 0.001,
-        zoomSpeed        : 0.001
+        zoomSpeed        : 0.1
     }, options);
 
     this._camera = camera;
@@ -47,7 +47,7 @@ _addEventListeners() {
     document.addEventListener('touchend', this._handleMouseUp);
     document.addEventListener('mousemove', this._handleMouseMove);
     document.addEventListener('touchmove', this._handleMouseMove);
-    this._domElement.addEventListener('mousewheel', this._handleMouseWheel);
+    this._domElement.addEventListener('wheel', this._handleMouseWheel);
     document.addEventListener('keydown', this._handleKeyDown);
     document.addEventListener('keyup', this._handleKeyUp);
 }
@@ -105,7 +105,7 @@ _handleMouseMove(e) {
 
 _handleMouseWheel(e) {
     e.preventDefault();
-    const amount = e.deltaY * this.zoomSpeed;
+    const amount = Math.sign(e.deltaY) * this.zoomSpeed;
     const keepScale = e.shiftKey;
     this._zoom(amount, keepScale);
 }
