@@ -1,0 +1,57 @@
+// #package uispecs
+
+// #section BlinnMatDialog
+
+{
+	"type": "panel",
+	"children": [
+		{
+			"type": "field",
+			"label": "Ambient:",
+			"children": [
+				{
+				"type": "spinner",
+				"bind": "matAmbient",
+				"value": 0,
+				"min": 0
+				}
+			]
+		},
+		{
+			"type": "field",
+			"label": "Diffuse:",
+			"children": [
+				{
+				"type": "spinner",
+				"bind": "matDiffuse",
+				"value": 1,
+				"min": 0
+				}
+			]
+			},
+			{
+			"type": "field",
+			"label": "Specular:",
+			"children": [
+				{
+				"type": "spinner",
+				"bind": "matSpecular",
+				"value": 1,
+				"min": 0
+				}
+			]
+		},
+		{
+			"type": "field",
+			"label": "Shininess:",
+			"children": [
+				{
+				"type": "spinner",
+				"bind": "matShininess",
+				"value": 1,
+				"min": 0
+				}
+			]
+		}
+	]
+}

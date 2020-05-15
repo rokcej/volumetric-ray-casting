@@ -144,6 +144,10 @@
                 {
                   "value": "phong",
                   "label": "Phong"
+                },
+                {
+                  "value": "blinn",
+                  "label": "Blinn-Phong"
                 }
               ]
             }

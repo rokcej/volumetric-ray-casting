@@ -95,6 +95,7 @@ _handleMatChange() {
     switch (selectedMat) {
         case 'lambertian'   : dialogClass = LambertianMatDialog; break;
         case 'phong'        : dialogClass = PhongMatDialog; break;
+        case 'blinn'        : dialogClass = BlinnMatDialog; break;
     }
 
     this._matDialog = new dialogClass(this._renderer);

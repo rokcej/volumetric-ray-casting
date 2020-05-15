@@ -135,12 +135,24 @@ void main() {
 
                     // Materials
                     if (uMatType == 1) { // Lambertian
-                        float diffuse = uMatDiffuse * cosAngle(lightDir, norm);
+                        // https://en.wikipedia.org/wiki/Lambertian_reflectance
+                        float diffuse = uMatDiffuse * cosAngle(norm, lightDir);
                         illum *= diffuse;
                     } else if (uMatType == 2) { // Phong
+                        // https://en.wikipedia.org/wiki/Phong_reflection_model
                         float ambient = uMatAmbient;
-                        float diffuse = uMatDiffuse * cosAngle(lightDir, norm);
-                        float specular = uMatSpecular * pow(cosAngle(-rayDirectionUnit, reflect(-lightDir, norm)), uMatShininess);
+                        float diffuse = uMatDiffuse * cosAngle(norm, lightDir);
+
+                        vec3 R = reflect(-lightDir, norm);
+                        float specular = uMatSpecular * pow(cosAngle(R, -rayDirectionUnit), uMatShininess);
+                        illum *= (ambient + diffuse + specular);
+                    } else if (uMatType == 3) { // Phong-Blinn
+                        // https://en.wikipedia.org/wiki/Blinn%E2%80%93Phong_reflection_model
+                        float ambient = uMatAmbient;
+                        float diffuse = uMatDiffuse * cosAngle(norm, lightDir);
+
+                        vec3 H = normalize(lightDir - rayDirectionUnit);
+                        float specular = uMatSpecular * pow(cosAngle(norm, H), 4.0 * uMatShininess); // Multiply by 4 to make it closer to phong shininess
                         illum *= (ambient + diffuse + specular);
                     }
 
