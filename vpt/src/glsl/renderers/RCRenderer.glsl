@@ -43,7 +43,7 @@ uniform bool uBidirShading;
 // Lights
 #define MAX_LIGHTS 8
 struct Light {
-    int type;
+    int type; // 0 == Uniform, 1 == Point, 2 == Directional
     float intensity;
     float attenuation;
     vec3 pos;
@@ -54,11 +54,14 @@ uniform int uNumLights;
 uniform Light uLights[MAX_LIGHTS];
 
 // Materials
-uniform int uMatType;
-uniform float uMatAmbient;
-uniform float uMatDiffuse;
-uniform float uMatSpecular;
-uniform float uMatShininess;
+struct Mat {
+    int type; // 1 == Lambertian, 2 == Phong, 3 == Blinn-Phong
+    float ambient;
+    float diffuse;
+    float specular;
+    float shininess;
+};
+uniform Mat uMat;
 
 in vec3 vRayFrom;
 in vec3 vRayTo;
@@ -143,26 +146,26 @@ void main() {
                         illum *= attenuation; // Apply light attenuation
 
                         // Materials
-                        if (uMatType == 1) { // Lambertian
+                        if (uMat.type == 1) { // Lambertian
                             // https://en.wikipedia.org/wiki/Lambertian_reflectance
-                            float ambient = uMatAmbient;
-                            float diffuse = uMatDiffuse * cosAngle(norm, lightDir);
+                            float ambient = uMat.ambient;
+                            float diffuse = uMat.diffuse * cosAngle(norm, lightDir);
                             illum *= (ambient + diffuse);
-                        } else if (uMatType == 2) { // Phong
+                        } else if (uMat.type == 2) { // Phong
                             // https://en.wikipedia.org/wiki/Phong_reflection_model
-                            float ambient = uMatAmbient;
-                            float diffuse = uMatDiffuse * cosAngle(norm, lightDir);
+                            float ambient = uMat.ambient;
+                            float diffuse = uMat.diffuse * cosAngle(norm, lightDir);
 
                             vec3 R = reflect(-lightDir, norm); // Reflected light vector
-                            float specular = uMatSpecular * pow(cosAngle(R, -rayDirectionUnit), uMatShininess);
+                            float specular = uMat.specular * pow(cosAngle(R, -rayDirectionUnit), uMat.shininess);
                             illum *= (ambient + diffuse + specular);
-                        } else if (uMatType == 3) { // Phong-Blinn
+                        } else if (uMat.type == 3) { // Phong-Blinn
                             // https://en.wikipedia.org/wiki/Blinn%E2%80%93Phong_reflection_model
-                            float ambient = uMatAmbient;
-                            float diffuse = uMatDiffuse * cosAngle(norm, lightDir);
+                            float ambient = uMat.ambient;
+                            float diffuse = uMat.diffuse * cosAngle(norm, lightDir);
 
                             vec3 H = normalize(lightDir - rayDirectionUnit); // Halfway vector
-                            float specular = uMatSpecular * pow(cosAngle(norm, H), 4.0 * uMatShininess); // Multiply by 4 to make it closer to phong shininess
+                            float specular = uMat.specular * pow(cosAngle(norm, H), 4.0 * uMat.shininess); // Multiply by 4 to make it closer to phong shininess
                             illum *= (ambient + diffuse + specular);
                         }
 

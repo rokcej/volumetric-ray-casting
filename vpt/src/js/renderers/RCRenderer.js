@@ -8,7 +8,9 @@ class RCRenderer extends AbstractRenderer {
 constructor(gl, volume, environmentTexture, options) {
     super(gl, volume, environmentTexture, options);
 
+    // Lights
     this._maxLights = 8;
+    this._numLights = 0;
     this._lights = new Array(this._maxLights);
     for (let i = 0; i < this._maxLights; ++i) {
         this._lights[i] = {
@@ -21,23 +23,18 @@ constructor(gl, volume, environmentTexture, options) {
         };
     }
 
+    // Material
+    this._mat = {
+        type        : 0, 
+        ambient     : 0.0,
+        diffuse     : 0.0,
+        specular    : 0.0,
+        shininess   : 1.0,
+    }
+
     Object.assign(this, {
         _stepSize : 0.0,
         _alphaCorrection : 0.0,
-        // Lights
-        _numLights   : 0,
-        _lightType   : 0,
-        _lightColor  : [0.0, 0.0, 0.0],
-        _lightPos    : [0.0, 0.0, 0.0],
-        _lightDir    : [0.0, 0.0, 0.0],
-        _lightIntensity     : 1.0,
-        _lightAttenuation   : 0.0,
-        // Materials
-        _matType        : 0, 
-        _matAmbient     : 0.0,
-        _matDiffuse     : 0.0,
-        _matSpecular    : 0.0,
-        _matShininess   : 1.0,
     }, options);
 
     this._programs = WebGL.buildPrograms(this._gl, {
@@ -106,19 +103,13 @@ _generateFrame() {
         gl.uniform3fv(program.uniforms["uLights[" + si + "].dir"], this._lights[i].dir);
         gl.uniform1f(program.uniforms["uLights[" + si + "].attenuation"], this._lights[i].attenuation);
     }
-    // gl.uniform1i(program.uniforms["uLights[0].type"], this._lightType);
-    // gl.uniform3fv(program.uniforms["uLights[0].color"], this._lightColor);
-    // gl.uniform1f(program.uniforms["uLights[0].intensity"], this._lightIntensity);
-    // gl.uniform3fv(program.uniforms["uLights[0].pos"], this._lightPos);
-    // gl.uniform3fv(program.uniforms["uLights[0].dir"], this._lightDir);
-    // gl.uniform1f(program.uniforms["uLights[0].attenuation"], this._lightAttenuation);
 
     // Materials
-    gl.uniform1i(program.uniforms.uMatType, this._matType);
-    gl.uniform1f(program.uniforms.uMatAmbient, this._matAmbient);
-    gl.uniform1f(program.uniforms.uMatDiffuse, this._matDiffuse);
-    gl.uniform1f(program.uniforms.uMatSpecular, this._matSpecular);
-    gl.uniform1f(program.uniforms.uMatShininess, this._matShininess);
+    gl.uniform1i(program.uniforms["uMat.type"], this._mat.type);
+    gl.uniform1f(program.uniforms["uMat.ambient"], this._mat.ambient);
+    gl.uniform1f(program.uniforms["uMat.diffuse"], this._mat.diffuse);
+    gl.uniform1f(program.uniforms["uMat.specular"], this._mat.specular);
+    gl.uniform1f(program.uniforms["uMat.shininess"], this._mat.shininess);
 
     gl.drawArrays(gl.TRIANGLE_FAN, 0, 4);
 }

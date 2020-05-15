@@ -22,12 +22,12 @@ class PhongMatDialog extends AbstractDialog {
 	}
 	
 	_handleChange() {
-		this._renderer._matType = 2;
+		this._renderer._mat.type = 2;
 
-		this._renderer._matAmbient = this._binds.matAmbient.getValue();
-		this._renderer._matDiffuse = this._binds.matDiffuse.getValue();
-		this._renderer._matSpecular = this._binds.matSpecular.getValue();
-		this._renderer._matShininess = this._binds.matShininess.getValue();
+		this._renderer._mat.ambient = this._binds.matAmbient.getValue();
+		this._renderer._mat.diffuse = this._binds.matDiffuse.getValue();
+		this._renderer._mat.specular = this._binds.matSpecular.getValue();
+		this._renderer._mat.shininess = this._binds.matShininess.getValue();
 
 		this._renderer.reset();
 	}

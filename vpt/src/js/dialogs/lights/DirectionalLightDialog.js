@@ -26,6 +26,7 @@ class DirectionalLightDialog extends AbstractDialog {
 		this._light.dir[0] = dir.x;
 		this._light.dir[1] = dir.y;
 		this._light.dir[2] = dir.z;
+		// Normalize direction
 		let len = Math.sqrt(dir.x * dir.x + dir.y * dir.y + dir.z * dir.z);
 		if (len > 0.0) {
 			let invLen = 1.0 / len;
