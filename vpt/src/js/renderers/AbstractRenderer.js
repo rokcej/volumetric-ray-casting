@@ -21,7 +21,7 @@ constructor(gl, volume, environmentTexture, options) {
     this._transferFunction = WebGL.createTexture(gl, {
         width  : 2,
         height : 1,
-        data   : new Uint8Array([255, 0, 0, 0, 255, 0, 0, 255]),
+        data   : new Uint8Array([224, 224, 224, 0, 224, 224, 224, 255]),
         wrapS  : gl.CLAMP_TO_EDGE,
         wrapT  : gl.CLAMP_TO_EDGE,
         min    : gl.LINEAR,

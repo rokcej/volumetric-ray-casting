@@ -136,8 +136,9 @@ void main() {
                     // Materials
                     if (uMatType == 1) { // Lambertian
                         // https://en.wikipedia.org/wiki/Lambertian_reflectance
+                        float ambient = uMatAmbient;
                         float diffuse = uMatDiffuse * cosAngle(norm, lightDir);
-                        illum *= diffuse;
+                        illum *= (ambient + diffuse);
                     } else if (uMatType == 2) { // Phong
                         // https://en.wikipedia.org/wiki/Phong_reflection_model
                         float ambient = uMatAmbient;

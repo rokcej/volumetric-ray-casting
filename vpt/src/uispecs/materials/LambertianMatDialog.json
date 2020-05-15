@@ -6,6 +6,20 @@
 	"type": "panel",
 	"children": [
 		{
+			"type": "field",
+			"label": "Ambient:",
+			"children": [
+				{
+				"type": "spinner",
+				"bind": "matAmbient",
+				"value": 0,
+				"step": 0.1,
+				"logarithmic": true,
+				"min": 0
+				}
+			]
+		},
+		{
 		  "type": "field",
 		  "label": "Diffuse:",
 		  "children": [
