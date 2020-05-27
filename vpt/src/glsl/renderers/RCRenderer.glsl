@@ -138,7 +138,7 @@ void main() {
                             lightDir = normalize(lightDir);
                             attenuation = 1.0 / (1.0 + uLights[i].attenuation * d2);
                         } else if (uLights[i].type == 2) { // Directional light
-                            lightDir = uLights[i].dir;
+                            lightDir = -uLights[i].dir;
                         } else { // Undefined light, error
                             lightDir = vec3(0.0);
                             attenuation = 0.0;
