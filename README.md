@@ -2,6 +2,14 @@
 
 Volumetric ray casting implementation in WebGL using [VPT](https://github.com/terier/vpt) framework.
 
+## Renders
+
+Video example: <https://youtu.be/KEstUN9zbAM>
+
+![Example render 2](renders/2.jpg "Example render 2")
+
+![Example render 4](renders/4.jpg "Example render 4")
+
 ## Features
 
 * Random offset sampling
