@@ -8,7 +8,7 @@ Video example: <https://youtu.be/KEstUN9zbAM>
 
 ![Example render 2](renders/2.jpg "Example render 2")
 
-![Example render 4](renders/4.jpg "Example render 4")
+More images can be found in [`renders/`](renders/).
 
 ## Features
 
